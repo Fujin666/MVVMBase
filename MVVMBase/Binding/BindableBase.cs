@@ -2,14 +2,18 @@
 using System.Runtime.CompilerServices;
 using MVVMBase.Annotations;
 
-namespace MVVMBase
+namespace MVVMBase.Binding
 {
-    public class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging, IChangeTracking
+    public abstract class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging, IChangeTracking
     {
         private bool _isChanged;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public event PropertyChangingEventHandler PropertyChanging = delegate { };
+
+        internal BindableBase()
+        {
+        }
 
         public bool SetProperty<T>(ref T target, T value, [CallerMemberName]string propertyName = null)
         {

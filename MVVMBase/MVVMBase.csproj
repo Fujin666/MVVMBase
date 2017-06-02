@@ -40,9 +40,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\CallerMemberNameAttribute.cs" />
-    <Compile Include="BindableBase.cs" />
+    <Compile Include="Attributes\ViewModelAttribute.cs" />
+    <Compile Include="Binding\BindableBase.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Components\Model.cs" />
+    <Compile Include="Components\ViewModel.cs" />
+    <Compile Include="Components\ViewModelLocator.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Messenger\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
