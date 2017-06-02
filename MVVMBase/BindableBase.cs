@@ -1,15 +1,19 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using MVVMBase.Annotations;
 
 namespace MVVMBase
 {
-    public class BindableBase : INotifyPropertyChanged
+    public class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangingEventHandler PropertyChanging;
 
-        public bool SetProperty<T>(ref T target, T value, string propertyName = null)
+        public bool SetProperty<T>(ref T target, T value, [CallerMemberName]string propertyName = null)
         {
-            if (target.Equals(value)) return false;
+            if (target != null && target.Equals(value)) return false;
+
+            OnPropertyChanging(propertyName);
 
             target = value;
 
@@ -21,7 +25,20 @@ namespace MVVMBase
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChangedEventHandler handle = PropertyChanged;
+            if (handle != null)
+            {
+                handle.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        protected virtual void OnPropertyChanging(string propertyName)
+        {
+            PropertyChangingEventHandler handle = PropertyChanging;
+            if (handle != null)
+            {
+                handle.Invoke(this, new PropertyChangingEventArgs(propertyName));
+            }
         }
     }
 }
