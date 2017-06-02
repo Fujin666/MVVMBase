@@ -4,8 +4,10 @@ using MVVMBase.Annotations;
 
 namespace MVVMBase
 {
-    public class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging
+    public class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging, IChangeTracking
     {
+        private bool _isChanged;
+
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
 
@@ -17,6 +19,8 @@ namespace MVVMBase
 
             target = value;
 
+            _isChanged = true;
+
             OnPropertyChanged(propertyName);
 
             return true;
@@ -25,6 +29,8 @@ namespace MVVMBase
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
+            if (propertyName == "IsChanged") return;
+
             PropertyChangedEventHandler handle = PropertyChanged;
             if (handle != null)
             {
@@ -34,11 +40,20 @@ namespace MVVMBase
 
         protected virtual void OnPropertyChanging(string propertyName)
         {
+            if (propertyName == "IsChanged") return;
+
             PropertyChangingEventHandler handle = PropertyChanging;
             if (handle != null)
             {
                 handle.Invoke(this, new PropertyChangingEventArgs(propertyName));
             }
         }
+
+        public void AcceptChanges()
+        {
+            _isChanged = false;
+        }
+
+        public bool IsChanged { get { return _isChanged; } }
     }
 }
