@@ -71,6 +71,30 @@ namespace MVVMBase.Factory.Instances
             }
         }
 
+        public object GetInstance(Type type)
+        {
+            foreach (var assembly in _assemblies)
+            {
+                object instance = GetInstance(assembly.Assembly, type);
+                if (instance != null) return instance;
+            }
+
+            return null;
+        }
+
+        private object GetInstance(Assembly assembly, Type type)
+        {
+            Type[] types = assembly.GetTypes();
+            foreach (Type typeInTypes in types)
+            {
+                if (typeInTypes == type)
+                {
+                    return Activator.CreateInstance(type);
+                }
+            }
+            return null;
+        }
+
         public T GetInstance<T>()
         {
             foreach (var assembly in _assemblies)
@@ -114,10 +138,25 @@ namespace MVVMBase.Factory.Instances
 
             foreach (var assembly in _assemblies)
             {
-                T instance = GetInstanceOfBase<T>(assembly.Assembly);
-                if (instance != null) list.Add(instance);
+                List<T> instances = GetInstancesOfBase<T>(assembly.Assembly);
+                if (instances != null) list.AddRange(instances);
             }
 
+            return list;
+        }
+
+        private List<T> GetInstancesOfBase<T>(Assembly assembly)
+        {
+            List<T> list = new List<T>();
+
+            Type[] types = assembly.GetTypes();
+            foreach (Type type in types)
+            {
+                if (type.BaseType == typeof(T))
+                {
+                    list.Add((T)Activator.CreateInstance(type));
+                }
+            }
             return list;
         }
 

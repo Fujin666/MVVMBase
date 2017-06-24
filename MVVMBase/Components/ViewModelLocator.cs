@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using MVVMBase.Binding;
-using MVVMBase.Factory;
+using MVVMBase.Factory.Catalog;
 
 namespace MVVMBase.Components
 {
@@ -29,14 +29,21 @@ namespace MVVMBase.Components
             if (e.NewValue == null) return;
 
             if (d == null) return;
-
-            Control control = d as Control;
+            
+            FrameworkElement control = d as FrameworkElement;
             if (control == null) return;
 
-            ViewModel viewModel = ViewModelCatalog.Default.GetViewModel(e.NewValue as Type);
-            if (viewModel == null) return;
+            CatalogEntry entry = ViewModelCatalog.Default.GetEntry(e.NewValue as Type);
+            if (entry == null) return;
 
-            control.DataContext = viewModel;
+            control.DataContext = entry.ViewModelInstance;
+
+            if (entry.View != null)
+            {
+                ContentPresenter contentPresenter = d as ContentPresenter;
+                if (contentPresenter != null)
+                    contentPresenter.Content = entry.View;
+            }
         }
     }
 }

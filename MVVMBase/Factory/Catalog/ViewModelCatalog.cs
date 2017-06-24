@@ -2,9 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using MVVMBase.Components;
-using MVVMBase.Factory.Catalog;
 
-namespace MVVMBase.Factory
+namespace MVVMBase.Factory.Catalog
 {
     internal class ViewModelCatalog
     {
@@ -36,9 +35,9 @@ namespace MVVMBase.Factory
             _catalogEntries = new ObservableCollection<CatalogEntry>();
         }
 
-        public void AddViewModel(ViewModel viewmodel)
+        public void AddViewModel(ViewModel viewmodel, View view)
         {
-            _catalogEntries.Add(new CatalogEntry(viewmodel));
+            _catalogEntries.Add(new CatalogEntry(viewmodel, view));
         }
 
         public ViewModel GetViewModel(Type viewModelType)
@@ -50,6 +49,11 @@ namespace MVVMBase.Factory
             }
 
             return null;
+        }
+
+        public CatalogEntry GetEntry(Type type)
+        {
+            return _catalogEntries.FirstOrDefault(x => x.EntryType == type);
         }
     }
 

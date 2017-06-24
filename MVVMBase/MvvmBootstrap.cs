@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using MVVMBase.Attributes;
 using MVVMBase.Components;
-using MVVMBase.Factory;
+using MVVMBase.Factory.Catalog;
 using MVVMBase.Factory.Instances;
 
 namespace MVVMBase
@@ -29,7 +31,20 @@ namespace MVVMBase
             List<ViewModel> viewmodels = InstanceLocator.Default.GetInstancesOfBase<ViewModel>();
             foreach (ViewModel viewmodel in viewmodels)
             {
-                ViewModelCatalog.Default.AddViewModel(viewmodel);
+                View view = null;
+                var attributes = viewmodel.GetType().GetCustomAttributes(typeof (ViewModelAttribute), false).Cast<ViewModelAttribute>().ToList();
+                if (attributes.Count == 1)
+                {
+                    var attribute = attributes.FirstOrDefault();
+                    if (attribute != null)
+                    {
+                        var viewInstance = InstanceLocator.Default.GetInstance(attribute.ViewType);
+                        if (viewInstance.GetType().BaseType == typeof(View))
+                            view = (View)viewInstance;
+                    }
+                }
+                
+                ViewModelCatalog.Default.AddViewModel(viewmodel, view);
             }
         }
     }

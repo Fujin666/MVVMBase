@@ -46,6 +46,7 @@
     <Compile Include="Attributes\CallerMemberNameAttribute.cs" />
     <Compile Include="Attributes\ViewModelAttribute.cs" />
     <Compile Include="Binding\BindableBase.cs" />
+    <Compile Include="Components\View.cs" />
     <Compile Include="Factory\Catalog\CatalogEntry.cs" />
     <Compile Include="Factory\Instances\AssemblyEntry.cs" />
     <Compile Include="Factory\Instances\InstanceLocator.cs" />
