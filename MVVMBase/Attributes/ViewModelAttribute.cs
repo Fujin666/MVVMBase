@@ -1,11 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MVVMBase.Attributes
 {
     public class ViewModelAttribute : Attribute
     {
+        public Type ViewType { get; private set; }
+
+        public ViewModelAttribute(Type viewType)
+        {
+            ViewType = viewType;
+        }
     }
 }

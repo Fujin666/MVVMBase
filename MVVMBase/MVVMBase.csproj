@@ -30,19 +30,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\CallerMemberNameAttribute.cs" />
     <Compile Include="Attributes\ViewModelAttribute.cs" />
     <Compile Include="Binding\BindableBase.cs" />
-    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Components\InstanceLocator.cs" />
+    <Compile Include="Factory\ViewModelCatalog.cs" />
+    <Compile Include="MvvmBootstrap.cs" />
     <Compile Include="Components\Model.cs" />
     <Compile Include="Components\ViewModel.cs" />
     <Compile Include="Components\ViewModelLocator.cs" />

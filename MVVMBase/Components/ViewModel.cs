@@ -4,7 +4,7 @@ using MVVMBase.Binding;
 
 namespace MVVMBase.Components
 {
-    public class ViewModel : BindableBase
+    public abstract class ViewModel : BindableBase
     {
         protected ViewModel()
         {
