@@ -2,13 +2,12 @@
 using System.Windows;
 using MVVMBase.Components;
 using MVVMBase.Factory;
+using MVVMBase.Factory.Instances;
 
 namespace MVVMBase
 {
     public abstract class MvvmBootstrap
     {
-        private readonly ViewModelCatalog _viewModelCatalog = new ViewModelCatalog();
-
         public Window MainWindow { get; private set; }
 
         public void Start()
@@ -30,7 +29,7 @@ namespace MVVMBase
             List<ViewModel> viewmodels = InstanceLocator.Default.GetInstancesOfBase<ViewModel>();
             foreach (ViewModel viewmodel in viewmodels)
             {
-                
+                ViewModelCatalog.Default.AddViewModel(viewmodel);
             }
         }
     }

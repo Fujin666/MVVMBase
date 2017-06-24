@@ -46,8 +46,10 @@
     <Compile Include="Attributes\CallerMemberNameAttribute.cs" />
     <Compile Include="Attributes\ViewModelAttribute.cs" />
     <Compile Include="Binding\BindableBase.cs" />
-    <Compile Include="Components\InstanceLocator.cs" />
-    <Compile Include="Factory\ViewModelCatalog.cs" />
+    <Compile Include="Factory\Catalog\CatalogEntry.cs" />
+    <Compile Include="Factory\Instances\AssemblyEntry.cs" />
+    <Compile Include="Factory\Instances\InstanceLocator.cs" />
+    <Compile Include="Factory\Catalog\ViewModelCatalog.cs" />
     <Compile Include="MvvmBootstrap.cs" />
     <Compile Include="Components\Model.cs" />
     <Compile Include="Components\ViewModel.cs" />

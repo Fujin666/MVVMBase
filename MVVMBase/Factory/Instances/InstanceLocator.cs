@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
-using System.Windows.Documents;
 
-namespace MVVMBase.Components
+namespace MVVMBase.Factory.Instances
 {
     public class InstanceLocator
     {
@@ -28,13 +29,13 @@ namespace MVVMBase.Components
             }
         }
 
-        private readonly Dictionary<AssemblyName, Assembly> _assemblies = new Dictionary<AssemblyName, Assembly>();
+        private readonly ObservableCollection<AssemblyEntry> _assemblies = new ObservableCollection<AssemblyEntry>();
 
         public InstanceLocator()
         {
             var entry = Assembly.GetEntryAssembly();
 
-            _assemblies.Add(entry.GetName(), entry);
+            _assemblies.Add(new AssemblyEntry(entry.GetName(), entry));
 
             AssemblyName[] assemblyNames = Assembly.GetEntryAssembly().GetReferencedAssemblies();
             foreach (AssemblyName assemblyName in assemblyNames)
@@ -43,7 +44,7 @@ namespace MVVMBase.Components
                     Assembly assembly = Assembly.Load(assemblyName);
                     if (assembly != null)
                     {
-                        _assemblies.Add(assemblyName, assembly);
+                        _assemblies.Add(new AssemblyEntry(assemblyName, assembly));
                     }
                 }
             }
@@ -51,28 +52,30 @@ namespace MVVMBase.Components
 
         private Assembly GetAssembly(AssemblyName assemblyName)
         {
-            Assembly assembly;
-            if (!_assemblies.ContainsKey(assemblyName))
+
+            AssemblyEntry entry = _assemblies.FirstOrDefault(x => x.AssemblyName == assemblyName);
+            if (entry == null)
             {
-                assembly = Assembly.Load(assemblyName);
+                Assembly assembly = Assembly.Load(assemblyName);
                 if (assembly != null)
                 {
-                    _assemblies.Add(assemblyName, assembly);
+                    _assemblies.Add(new AssemblyEntry(assemblyName, assembly));
+                    return GetAssembly(assemblyName);
                 }
+
+                return null;
             }
             else
             {
-                assembly = _assemblies[assemblyName];
+                return entry.Assembly;
             }
-
-            return assembly;
         }
 
         public T GetInstance<T>()
         {
             foreach (var assembly in _assemblies)
             {
-                T instance = GetInstance<T>(assembly.Value);
+                T instance = GetInstance<T>(assembly.Assembly);
                 if (instance != null) return instance;
             }
 
@@ -98,7 +101,7 @@ namespace MVVMBase.Components
 
             foreach (var assembly in _assemblies)
             {
-                T instance = GetInstance<T>(assembly.Value);
+                T instance = GetInstance<T>(assembly.Assembly);
                 if (instance != null) list.Add(instance);
             }
 
@@ -111,7 +114,7 @@ namespace MVVMBase.Components
 
             foreach (var assembly in _assemblies)
             {
-                T instance = GetInstanceOfBase<T>(assembly.Value);
+                T instance = GetInstanceOfBase<T>(assembly.Assembly);
                 if (instance != null) list.Add(instance);
             }
 
