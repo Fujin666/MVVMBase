@@ -1,20 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using MVVMBase.Attributes;
-using MVVMBase.Components;
-using MVVMBase.Factory.Catalog;
-using MVVMBase.Factory.Instances;
+﻿using System.Windows;
+using MVVMBase.Core;
 
 namespace MVVMBase
 {
     public abstract class MvvmBootstrap
     {
+        public IKernel Kernel { get; private set; }
+
+        private readonly ITypeResolver _typeResolver;
+
         public Window MainWindow { get; private set; }
 
+        protected MvvmBootstrap() : this(new TypeResolver())
+        {
+        }
+
+        protected MvvmBootstrap(ITypeResolver typeResolver)
+        {
+            Kernel = new Kernel();
+            _typeResolver = typeResolver;
+        }
+        
         public void Start()
         {
-            CreateViewModelCatalog();
+            Kernel.Initialize(_typeResolver);
 
             MainWindow = (Window) CreateMainWindow();
             Application.Current.MainWindow = MainWindow;
@@ -23,29 +32,7 @@ namespace MVVMBase
 
         protected virtual DependencyObject CreateMainWindow()
         {
-            return InstanceLocator.Default.GetInstance<Window>();
-        }
-
-        protected void CreateViewModelCatalog()
-        {
-            List<ViewModel> viewmodels = InstanceLocator.Default.GetInstancesOfBase<ViewModel>();
-            foreach (ViewModel viewmodel in viewmodels)
-            {
-                View view = null;
-                var attributes = viewmodel.GetType().GetCustomAttributes(typeof (ViewModelAttribute), false).Cast<ViewModelAttribute>().ToList();
-                if (attributes.Count == 1)
-                {
-                    var attribute = attributes.FirstOrDefault();
-                    if (attribute != null)
-                    {
-                        var viewInstance = InstanceLocator.Default.GetInstance(attribute.ViewType);
-                        if (viewInstance.GetType().BaseType == typeof(View))
-                            view = (View)viewInstance;
-                    }
-                }
-                
-                ViewModelCatalog.Default.AddViewModel(viewmodel, view);
-            }
+            return _typeResolver.GetInstanceOf<Window>();
         }
     }
 }

@@ -46,11 +46,17 @@
     <Compile Include="Attributes\CallerMemberNameAttribute.cs" />
     <Compile Include="Attributes\ViewModelAttribute.cs" />
     <Compile Include="Binding\BindableBase.cs" />
+    <Compile Include="Components\Frame.cs" />
     <Compile Include="Components\View.cs" />
+    <Compile Include="Core\IKernel.cs" />
+    <Compile Include="Core\ITypeResolver.cs" />
+    <Compile Include="Factory\Catalog\BindingEntry.cs" />
     <Compile Include="Factory\Catalog\CatalogEntry.cs" />
-    <Compile Include="Factory\Instances\AssemblyEntry.cs" />
-    <Compile Include="Factory\Instances\InstanceLocator.cs" />
+    <Compile Include="Core\AssemblyEntry.cs" />
+    <Compile Include="Core\TypeResolver.cs" />
     <Compile Include="Factory\Catalog\ViewModelCatalog.cs" />
+    <Compile Include="Factory\Modules\IModule.cs" />
+    <Compile Include="Core\Kernel.cs" />
     <Compile Include="MvvmBootstrap.cs" />
     <Compile Include="Components\Model.cs" />
     <Compile Include="Components\ViewModel.cs" />
@@ -59,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Factory\Instances\" />
     <Folder Include="Messenger\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,6 +8,7 @@ namespace MVVMBase.Components
     {
         protected ViewModel()
         {
+
         }
 
         public bool IsDesignInstance
@@ -16,6 +17,16 @@ namespace MVVMBase.Components
             {
                 return DesignerProperties.GetIsInDesignMode(new DependencyObject());
             }
+        }
+
+        public virtual void ViewModelCtor()
+        {
+            
+        }
+
+        public virtual void ViewModelDesignModeCtor()
+        {
+            
         }
     }
 }

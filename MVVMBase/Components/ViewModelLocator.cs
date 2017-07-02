@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using MVVMBase.Binding;
 using MVVMBase.Factory.Catalog;
 
 namespace MVVMBase.Components
 {
-    public class ViewModelLocator : BindableBase
+    public class ViewModelLocator : DependencyObject
     {
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.RegisterAttached(
             "ViewModel", 
@@ -40,9 +38,9 @@ namespace MVVMBase.Components
 
             if (entry.View != null)
             {
-                ContentPresenter contentPresenter = d as ContentPresenter;
-                if (contentPresenter != null)
-                    contentPresenter.Content = entry.View;
+                Frame frame = d as Frame;
+                if (frame != null)
+                    frame.Content = entry.View;
             }
         }
     }

@@ -29,10 +29,12 @@ namespace MVVMBase.Factory.Catalog
         }
 
         private readonly ObservableCollection<CatalogEntry> _catalogEntries;
+        private readonly ObservableCollection<BindingEntry> _bindingEntries;
 
         public ViewModelCatalog()
         {
             _catalogEntries = new ObservableCollection<CatalogEntry>();
+            _bindingEntries = new ObservableCollection<BindingEntry>();
         }
 
         public void AddViewModel(ViewModel viewmodel, View view)
@@ -40,20 +42,15 @@ namespace MVVMBase.Factory.Catalog
             _catalogEntries.Add(new CatalogEntry(viewmodel, view));
         }
 
-        public ViewModel GetViewModel(Type viewModelType)
-        {
-            CatalogEntry catalogEntry = _catalogEntries.FirstOrDefault(x => x.EntryType == viewModelType);
-            if (catalogEntry != null)
-            {
-                return catalogEntry.ViewModelInstance;
-            }
-
-            return null;
-        }
-
         public CatalogEntry GetEntry(Type type)
         {
             return _catalogEntries.FirstOrDefault(x => x.EntryType == type);
+        }
+
+        public void CreateBinding<TInterface, TClass>() where TInterface : class where TClass : class
+        {
+            BindingEntry bindingEntry = new BindingEntry(typeof(TInterface), typeof(TClass));
+            _bindingEntries.Add(bindingEntry);
         }
     }
 

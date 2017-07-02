@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MVVMBase.Factory.Instances
+namespace MVVMBase.Core
 {
     internal class AssemblyEntry
     {
