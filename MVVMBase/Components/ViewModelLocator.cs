@@ -31,7 +31,7 @@ namespace MVVMBase.Components
             FrameworkElement control = d as FrameworkElement;
             if (control == null) return;
 
-            CatalogEntry entry = ViewModelCatalog.Default.GetEntry(e.NewValue as Type);
+            CatalogEntry entry = ViewModelCatalog.GetEntry(e.NewValue as Type);
             if (entry == null) return;
 
             control.DataContext = entry.ViewModelInstance;

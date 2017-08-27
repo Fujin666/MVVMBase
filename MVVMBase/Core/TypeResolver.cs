@@ -1,149 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
 namespace MVVMBase.Core
 {
-    public class TypeResolver : ITypeResolver
+    internal class TypeResolver
     {
-        private readonly ObservableCollection<AssemblyEntry> _assemblies;
-
-        public TypeResolver()
+        private static IEnumerable<Assembly> GetAssemblies()
         {
-            _assemblies = new ObservableCollection<AssemblyEntry>();
-
-            LoadReferences(Assembly.GetEntryAssembly());
+            return AppDomain.CurrentDomain.GetAssemblies();
         }
 
-        private void LoadReferences(Assembly rootAssembly)
+        public static T GetInstanceOf<T>() where T : class
         {
-            var name = rootAssembly.GetName().Name;
-            if (_assemblies.FirstOrDefault(x => x.AssemblyName.Name == name) == null)
-            {
-                _assemblies.Add(new AssemblyEntry(rootAssembly.GetName(), rootAssembly));
-            }
-            else
-            {
-                return;
-            }
-            
-            AssemblyName[] assemblyNames = rootAssembly.GetReferencedAssemblies();
-            foreach (AssemblyName assemblyName in assemblyNames)
-            {
-                {
-                    Assembly assembly = Assembly.Load(assemblyName);
-                    if (assembly != null)
-                    {
-                        LoadReferences(assembly);
-                    }
-                }
-            }
-        }
-        
-        public T GetInstanceOf<T>()
-        {
-            foreach (var assembly in _assemblies)
-            {
-                T instance = (T)GetInstanceOf(assembly.Assembly, typeof(T));
-                if (instance != null) return instance;
-            }
-
-            return default(T);
+            return GetInstanceOf<T>(new object[0]);
         }
 
-        public object GetInstanceOf(Type type)
+        public static object GetInstanceOf(Type type)
         {
-            foreach (var assembly in _assemblies)
-            {
-                object instance = GetInstanceOf(assembly.Assembly, type);
-                if (instance != null) return instance;
-            }
-
-            return null;
+            return GetInstanceOf(type, new object[0]);
         }
 
-        public T GetInstanceOfBase<T>()
+        public static T GetInstanceOf<T>(object[] constructorArguments)
         {
-            foreach (var assembly in _assemblies)
-            {
-                T instance = (T)GetInstanceOfBase(assembly.Assembly, typeof(T));
-                if (instance != null) return instance;
-            }
+            var type = typeof(T);
+            var loadedAssembly = GetAssemblies().FirstOrDefault(x => x == type.Assembly);
 
-            return default(T);
+            return (T)GetInstanceOf(loadedAssembly, typeof(T), constructorArguments);
         }
 
-        public object GetInstanceOfBase(Type type)
+        public static object GetInstanceOf(Type type, params object[] constructorArguments)
         {
-            foreach (var assembly in _assemblies)
-            {
-                object instance = GetInstanceOfBase(assembly.Assembly, type);
-                if (instance != null) return instance;
-            }
+            var loadedAssembly = GetAssemblies().FirstOrDefault(x => x == type.Assembly);
 
-            return null;
+            return GetInstanceOf(loadedAssembly, type, constructorArguments);
         }
 
-        public IEnumerable<T> GetInstancesOf<T>()
+        public static T GetInstanceOfBase<T>() where T : class
         {
-            foreach (var assembly in _assemblies)
+            var type = typeof(T);
+            var loadedAssembly = GetAssemblies().FirstOrDefault(x => x == type.Assembly);
+
+            return (T)GetInstanceOfBase(loadedAssembly, typeof(T));
+        }
+
+        public static object GetInstanceOfBase(Type type)
+        {
+            var loadedAssembly = GetAssemblies().FirstOrDefault(x => x == type.Assembly);
+
+            return GetInstanceOfBase(loadedAssembly, type);
+        }
+
+        public static IEnumerable<T> GetInstancesOf<T>() where T : class
+        {
+            foreach (var assembly in GetAssemblies())
             {
-                foreach (T instance in GetInstancesOf(assembly.Assembly, typeof(T)))
+                foreach (T instance in GetInstancesOf(assembly, typeof(T)))
                 {
                     yield return instance;
                 }
             }
         }
 
-        public IEnumerable<object> GetInstancesOf(Type type)
+        public static IEnumerable<object> GetInstancesOf(Type type)
         {
-            foreach (var assembly in _assemblies)
+            foreach (var assembly in GetAssemblies())
             {
-                foreach (object instance in GetInstancesOf(assembly.Assembly, type))
+                foreach (object instance in GetInstancesOf(assembly, type))
                 {
                     yield return instance;
                 }
             }
         }
 
-        public IEnumerable<T> GetInstancesOfBase<T>()
+        public static IEnumerable<T> GetInstancesOfBase<T>() where T : class
         {
-            foreach (var assembly in _assemblies)
+            foreach (var assembly in GetAssemblies())
             {
-                foreach (T instance in GetInstancesOfBase(assembly.Assembly, typeof(T)))
+                foreach (T instance in GetInstancesOfBase(assembly, typeof(T)))
                 {
                     yield return instance;
                 }
             }
         }
 
-        public IEnumerable<object> GetInstancesOfBase(Type type)
+        public static IEnumerable<object> GetInstancesOfBase(Type type)
         {
-            foreach (var assembly in _assemblies)
+            foreach (var assembly in GetAssemblies())
             {
-                foreach (object instance in GetInstancesOfBase(assembly.Assembly, type))
+                foreach (object instance in GetInstancesOfBase(assembly, type))
                 {
                     yield return instance;
                 }
             }
         }
 
-        private object GetInstanceOf(Assembly assembly, Type type)
+        private static object GetInstanceOf(Assembly assembly, Type type, object[] constructorArguments)
         {
             Type[] types = assembly.GetTypes();
             foreach (Type typeInTypes in types)
             {
                 if (typeInTypes == type)
                 {
-                    return Activator.CreateInstance(typeInTypes);
+                    return Activator.CreateInstance(typeInTypes, constructorArguments);
                 }
             }
             return null;
         }
 
-        private IEnumerable<object> GetInstancesOf(Assembly assembly, Type type)
+        private static IEnumerable<object> GetInstancesOf(Assembly assembly, Type type)
         {
             Type[] types = assembly.GetTypes();
             foreach (Type typeInTypes in types)
@@ -155,7 +121,7 @@ namespace MVVMBase.Core
             }
         }
 
-        private object GetInstanceOfBase(Assembly assembly, Type type)
+        private static object GetInstanceOfBase(Assembly assembly, Type type)
         {
             Type[] types = assembly.GetTypes();
             foreach (Type typeInTypes in types)
@@ -182,7 +148,7 @@ namespace MVVMBase.Core
             return null;
         }
 
-        private IEnumerable<object> GetInstancesOfBase(Assembly assembly, Type type)
+        private static IEnumerable<object> GetInstancesOfBase(Assembly assembly, Type type)
         {
             Type[] types = assembly.GetTypes();
             foreach (Type typeInTypes in types)
@@ -205,6 +171,17 @@ namespace MVVMBase.Core
                     }
                 }
             }
+        }
+
+        public static IEnumerable<ParameterInfo> GetConstructorArguments<TClass>() where TClass : class 
+        {
+            var ctors = typeof(TClass).GetConstructors();
+            if (ctors.Length == 0)
+            {
+                return null;
+            }
+
+            return ctors.First().GetParameters();
         }
     }
 }

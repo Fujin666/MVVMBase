@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using MVVMBase.Components;
 using MVVMBase.Core;
 
 namespace MVVMBase
@@ -7,32 +8,25 @@ namespace MVVMBase
     {
         public IKernel Kernel { get; private set; }
 
-        private readonly ITypeResolver _typeResolver;
-
         public Window MainWindow { get; private set; }
 
-        protected MvvmBootstrap() : this(new TypeResolver())
-        {
-        }
-
-        protected MvvmBootstrap(ITypeResolver typeResolver)
+        protected MvvmBootstrap()
         {
             Kernel = new Kernel();
-            _typeResolver = typeResolver;
         }
         
         public void Start()
         {
-            Kernel.Initialize(_typeResolver);
+            Kernel.Initialize();
 
-            MainWindow = (Window) CreateMainWindow();
+            MainWindow = (Shell) CreateMainWindow();
             Application.Current.MainWindow = MainWindow;
             MainWindow.Show();
         }
 
         protected virtual DependencyObject CreateMainWindow()
         {
-            return _typeResolver.GetInstanceOf<Window>();
+            return Kernel.Get<Shell>();
         }
     }
 }

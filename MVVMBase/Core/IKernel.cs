@@ -1,11 +1,16 @@
-﻿namespace MVVMBase.Core
+﻿using System.Windows;
+
+namespace MVVMBase.Core
 {
     public interface IKernel
     {
-        void Initialize(ITypeResolver typeResolver);
+        void Initialize();
 
-        void Bind<TInterface, TClass>()
+        void Bind<TInterface, TClass>(BindingType bindingType = BindingType.Default)
             where TInterface : class
-            where TClass : class;
+            where TClass : class, TInterface;
+
+        T Get<T>()
+            where T : class;
     }
 }
